@@ -1,24 +1,28 @@
+const cohortName = process.argv[2];
+const limit = process.argv[3] || 5;
+const values = [ `%${cohortName}%`, limit ];
+
 const { Pool } = require('pg');
 
 const pool = new Pool({
   user: 'vagrant',
   password: '123',
   host: 'localhost',
-  database: 'bootcampx'
+  database: 'vagrant'
 });
 
-pool
-  .query(
-    `
-SELECT id, name, cohort_id
-FROM students
-LIMIT 5;
-`
-  )
-  .then((res) => {
-    console.log(res.rows);
-  })
-  .catch((err) => console.error('query error', err.stack));
+// pool
+//   .query(
+//     `
+// SELECT id, name, cohort_id
+// FROM students
+// LIMIT 5;
+// `
+//   )
+//   .then((res) => {
+//     console.log(res.rows);
+//   })
+//   .catch((err) => console.error('query error', err.stack));
 
 pool
   .query(
@@ -26,9 +30,10 @@ pool
   SELECT students.id as student_id, students.name as name, cohorts.name as cohort
   FROM students
   JOIN cohorts ON cohorts.id = cohort_id
-  WHERE cohorts.name LIKE '%${process.argv[2]}%'
-  LIMIT ${process.argv[3] || 5};
-  `
+  WHERE cohorts.name LIKE '%${values[0]}%'
+  LIMIT ${values[1]};
+  `,
+    values
   )
   .then((res) => {
     res.rows.forEach((user) => {
